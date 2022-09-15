@@ -1,6 +1,6 @@
 import './App.css';
-import Viewer from './Viewer';
-import FileSelector from './FileSelector';
+import Viewer from './components/Viewer';
+import FileSelector from './components/FileSelector';
 import { useState } from 'react';
 
 function App() {
