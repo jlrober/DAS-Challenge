@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import './App.css';
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import Tiff from 'tiff.js';
 import CircularProgress from '@mui/material/CircularProgress';
