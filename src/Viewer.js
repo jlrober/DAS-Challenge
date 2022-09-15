@@ -9,56 +9,73 @@ import Paper from '@mui/material/Paper';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
-import tiffFile from './Test_Document.tif';
+async function readFile(file, setFileContents) {
+  const start = 0;
+  const stop = file.size - 1;
 
-function Viewer() {
+  let blob;
+  if (file.slice) {
+    blob = file.slice(start, stop + 1);
+  } else if (file.webkitSlice) {
+    blob = file.webkitSlice(start, stop + 1);
+  } else if (file.mozSlice) {
+    blob = file.mozSlice(start, stop + 1);
+  } else {
+    console.log('no slice methods, unsupported browser');
+  }
+  const res = await blob.arrayBuffer(file);
+  setFileContents(res);
+}
+
+function Viewer({ currentFile }) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [directoryCount, setDirectoryCount] = useState(null);
+  const [fileContents, setFileContents] = useState(null);
+  const [currentTiff, setCurrentTiff] = useState(null);
 
   useEffect(() => {
-    var xhr = new XMLHttpRequest();
-    xhr.responseType = "arraybuffer";
-    xhr.open("GET", tiffFile);
-    xhr.onload = function (e) {
-      Tiff.initialize({
-        TOTAL_MEMORY: 16777216 * 10
-      })
-      console.log(this.response);
-      var tiff = new Tiff({
-        buffer: xhr.response
-      });
-      setDirectoryCount(tiff.countDirectory());
-      tiff.setDirectory(currentPage);
-      var pageContent = tiff.toDataURL();
-      document.getElementById('img').src = pageContent;
-    }
-    xhr.send();
+    readFile(currentFile, setFileContents);
   }, [currentPage]);
 
-  const previousEnabled = currentPage > 0;
-  const nextEnabled = currentPage < directoryCount - 1;
+  if (fileContents && !currentTiff) {
+    Tiff.initialize({
+      TOTAL_MEMORY: 16777216 * 10
+    })
+    var tiff = new Tiff({
+      buffer: fileContents
+    });
+    setCurrentTiff(tiff);
+  }
+  
+  let output = <CircularProgress />;
 
-  const Content = <>
-    <IconButton disabled={!previousEnabled} onClick={() => setCurrentPage(previousEnabled ? currentPage - 1 : currentPage)}>
-      <KeyboardArrowLeftIcon sx={{ fontSize: 80 }} />
-    </IconButton>
-    <Paper elevation={24} sx={{ height: '100%' }} variant="outlined">
-      <TransformWrapper>
-        <TransformComponent wrapperStyle={{ height: '100%' }} contentStyle={{ height: '100%' }}>
-          <div id="img-container">
-            <img id="img"/>
-          </div>
-        </TransformComponent>
-      </TransformWrapper>
-    </Paper>
-    <IconButton disabled={!nextEnabled} onClick={() => setCurrentPage(nextEnabled ? currentPage + 1 : currentPage)}>
-      <KeyboardArrowRightIcon sx={{ fontSize: 80 }} />
-    </IconButton>
-  </>
+  if (currentTiff) {
+    const directoryCount = currentTiff.countDirectory();
+    currentTiff.setDirectory(currentPage);
+    const previousEnabled = currentPage > 0;
+    const nextEnabled = currentPage < directoryCount - 1;
+
+    output = <>
+      <IconButton disabled={!previousEnabled} onClick={() => setCurrentPage(previousEnabled ? currentPage - 1 : currentPage)}>
+        <KeyboardArrowLeftIcon sx={{ fontSize: 80 }} />
+      </IconButton>
+      <Paper elevation={24} sx={{ height: '100%' }} variant="outlined">
+        <TransformWrapper>
+          <TransformComponent wrapperStyle={{ height: '100%' }} contentStyle={{ height: '100%' }}>
+            <div id="img-container">
+              <img id="img" src={currentTiff && currentTiff.toDataURL()} />
+            </div>
+          </TransformComponent>
+        </TransformWrapper>
+      </Paper>
+      <IconButton disabled={!nextEnabled} onClick={() => setCurrentPage(nextEnabled ? currentPage + 1 : currentPage)}>
+        <KeyboardArrowRightIcon sx={{ fontSize: 80 }} />
+      </IconButton>
+    </>
+  }
 
   return (
     <div className="Viewer">
-      { directoryCount ? Content : <CircularProgress /> }
+      {output}
     </div>
   );
 }

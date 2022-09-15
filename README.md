@@ -1,3 +1,9 @@
+# Note on Coding Challenge
+
+I used create-react-app and one of the libraries needed some custom config added to webpack, so had to eject. This is why it lists so many dependencies in package.json.
+
+There are also a few different ways you could handle displaying this preview. From the description it sounded like you were most wanting to display the entire file with the ability to zoom and pan.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -70,8 +76,3 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 
 
-
-
-# Note on Coding Challenge
-
-I used create-react-app and one of the libraries needed some custom config added to webpack, so had to eject. This is why it lists so many dependencies in package.json.

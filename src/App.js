@@ -10,7 +10,7 @@ function App() {
     <div className="App">
       <header className="App-header">
       </header>
-      { currentFile !== "" ? <Viewer /> : <FileSelector currentFile={currentFile} setCurrentFile={setCurrentFile} /> }
+      { currentFile !== "" ? <Viewer currentFile={currentFile} /> : <FileSelector currentFile={currentFile} setCurrentFile={setCurrentFile} /> }
     </div>
   );
 }
